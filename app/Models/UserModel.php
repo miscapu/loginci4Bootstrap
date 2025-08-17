@@ -12,7 +12,7 @@ class UserModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = [ 'firstname', 'lastname', 'email', 'password', 'role', 'created_at', 'updated_at'  ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -35,12 +35,39 @@ class UserModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
+    protected $beforeInsert   = ['beforeInsert'];
     protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
+    protected $beforeUpdate   = ['beforeUpdate'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    protected function passwordHatch( array $data )
+    {
+        if ( isset( $data[ 'data' ][ 'password' ] ) )
+        {
+            $data[ 'data' ][ 'password' ]   =   password_hash( $data[ 'data' ][ 'password' ], PASSWORD_DEFAULT );
+        }
+
+        return $data;
+    }
+
+
+    protected function beforeInsert( array $data)
+    {
+        $data   =   $this->passwordHatch( $data );
+        $data[ 'data' ][ 'created_at' ] =   date( 'Y-m-d H:i:s' );
+
+        return $data;
+    }
+
+    protected function beforeUpdate( array $data)
+    {
+        $data   =   $this->passwordHatch( $data );
+        $data[ 'data' ][ 'updated_at' ] =   date( 'Y-m-d H:i:s' );
+
+        return $data;
+    }
 }

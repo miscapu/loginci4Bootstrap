@@ -22,7 +22,7 @@ class UserController extends BaseController
      */
     public function __construct()
     {
-        $userModel  =   new UserModel();
+        $this->userModel  =   new UserModel();
     }
 
 
@@ -102,20 +102,20 @@ class UserController extends BaseController
      * @since 17.08.2025
      * @author MiSCapu
      */
-    public function registerUSer()
+    public function registerUser()
     {
-        helper(['form']);
+        helper( [ 'form' ] );
 
         $data   =   [
-            'title'     =>  'Register User'
+            'title'             =>  'Register'
         ];
 
-        if ( $this->request->getMethod() == 'POST' )
+        if ( $this->request->getMethod()    == 'POST' )
         {
-            $rules  =   [
+            $rules      =   [
                 'firstnameFrm'      =>  'required|min_length[3]|max_length[50]',
                 'lastnameFrm'       =>  'required|min_length[3]|max_length[80]',
-                'emailFrm'          =>  'required|min_length[3],max_length[80]|valid_email|is_unique[users.email]',
+                'emailFrm'          =>  'required|min_length[3]|max_length[80]|valid_email|is_unique[users.email]',
                 'pwdFrm'            =>  'required|min_length[3]|max_length[255]',
                 'cfpwdFrm'          =>  'matches[pwdFrm]'
             ];
@@ -151,29 +151,27 @@ class UserController extends BaseController
                     'matches'      =>  'Please, password dont matches!',
                 ],
             ];
-
-            if ( !$this->validate( $rules, $messages ) )
-            {
-                $data['validation'] =   $this->validator;
+            if ( !$this->validate( $rules, $messages ) ){
+                $data[ 'validation' ]   =   $this->validator;
             }else
-                {
-                    $newData    =       [
-                        'firstname'         =>  $this->request->getVar('firstnameFrm'),
-                        'lastnameFrm'       =>  $this->request->getVar('lastnameFrm'),
-                        'email'             =>  $this->request->getVar('email'),
-                        'pwdFrm'            =>  $this->request->getVar('pwdFrm'),
-                    ];
+            {
+                $newData    =   [
+                    'firstname'     =>  $this->request->getVar( 'firstnameFrm' ),
+                    'lastname'      =>  $this->request->getVar( 'lastnameFrm' ),
+                    'email'         =>  $this->request->getVar( 'emailFrm' ),
+                    'password'      =>  $this->request->getVar( 'pwdFrm' ),
+                ];
 
-                    $this->userModel->save($newData);
-                    $session    =   session();
-                    $session->setFlashdata('success', 'Successful Registration');
+                $this->userModel->save( $newData );
+                $session    =   session();
+                $session->setFlashdata( 'success',  'Successfull Registration'  );
 
-                    return redirect()->to('/');
-                }
+                return redirect()->to( '/' );
+            }
         }
 
         $renderT    =   \Config\Services::renderer();
-        return $renderT->setData($data)->render( 'Admin/Pages/Form' );
+        return $renderT->setData( $data )->render( 'Admin/Pages/Form' );
     }
 
 
